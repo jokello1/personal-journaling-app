@@ -12,3 +12,92 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id                  String  @id @default(uuid())
+  email               String  @unique
+  password            String
+  name                String
+  entries             Entry[]
+  categories          Category[]
+  tags                Tag[]
+  settings            Settings?
+  createdAt           DateTime  @default(now()) @map("created_at")
+  updateAt            DateTime @updatedAt  @map("updated_at")
+
+  @@map("users")
+}
+
+model Settings {
+  id                  String    @id @default(uuid())
+  userId              String    @unique @map("user_id")
+  user                User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  darkMode            Boolean   @default(false) @map("dark_mode")
+  emailNotifications  Boolean   @default(true) @map("email_notifications")
+  createdAt           DateTime  @default(now()) @map("created_at")
+  updateAt            DateTime  @updatedAt  @map("updated_at")
+
+  @@map("settings")
+}
+
+model Entry{
+  id                  String    @id @default(uuid())
+  title               String
+  content             String    @db.Text
+  userId              String    @map("user_id")
+  user                User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  mood                String?
+  categories          EntryCategory[]
+  tags                EntryTag[]
+  createdAt           DateTime  @default(now()) @map("created_at")
+  updateAt            DateTime  @updatedAt  @map("updated_at")
+
+  @@map("entries)
+}
+
+model Category {
+  id                  String   @id  @default(uuid())
+  name                String
+  color               String
+  userId              String   @map("user_id")
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  entries             EntryCategory[]
+  createdAt           DateTime @default(now()) @map("created_at")
+  updateAt            DateTime @updatedAt  @map("updated_at")
+
+  @@unique([userId,name])
+  @@map("categories")
+}
+
+model Tag {
+  id                 String   @id  @default(uuid())
+  name               String
+  userId             String   @map("user_id")
+  user               User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  entries            EntryTag[]
+  createdAt          DateTime @default(now()) @map("created_at")
+  updateAt           DateTime @updatedAt  @map("updated_at")
+
+  @@unique([userId,name])
+  @@map("categories")
+}
+
+model EntryCategory {
+  entryId           String    @map("entry_id")
+  categoryId        String    @map("category_id")
+  entry             Entry     @relation(fields: [entryId], references: [id], onDelete: Cascade)
+  category          Category  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([entryId, categoryId])
+  @@map("entry_categories")
+}
+
+model EntryTag {
+  entryId           String    @map("entry_id")
+  tagId             String    @map("tag_id")
+  entry             Entry     @relation(fields: [entryId], references: [id], onDelete: Cascade)
+  tag               Tag       @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([entryId, tagId])
+  @@map("entry_tags")
+}
