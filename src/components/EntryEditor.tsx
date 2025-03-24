@@ -1,4 +1,3 @@
-
 'use client';
 import { EntryEditorProps } from "@/app/lib/services/types/interfaces";
 import { useState } from "react";
@@ -8,10 +7,8 @@ import Placeholder from '@tiptap/extension-placeholder';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { MultiSelect } from '@/components/ui/multi-select';
-import { useMutation, useQueryClient } from 'react-query';
-import { useToast } from '@/components/ui/use-toast';
-import { title } from "process";
+import { toast } from "sonner"
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export function EntryEditor({ initialData, categories, onSave, onCancel }: EntryEditorProps) {
     const [selectedCategoryIds, setSelectedCategoryIds] = useState(initialData?.categoryIds || []);
@@ -20,7 +17,6 @@ export function EntryEditor({ initialData, categories, onSave, onCancel }: Entry
     const [title, setTitle] = useState(initialData?.title || '')
     const [tags, setTags] = useState(initialData?.tagNames || [])
 
-    const {toast} = useToast();
     const queryClient = useQueryClient();
     const editor = useEditor({
         extensions: [
@@ -32,7 +28,8 @@ export function EntryEditor({ initialData, categories, onSave, onCancel }: Entry
         content: initialData?.content || ""
     });
 
-    const createEntryMutation = useMutation(async (data: {
+    const createEntryMutation = useMutation({
+        mutationFn:async (data: {
         title: string;
         content: string;
         mood?: string;
@@ -50,24 +47,17 @@ export function EntryEditor({ initialData, categories, onSave, onCancel }: Entry
             throw new Error("An error occurred while saving the entry");
         }
         return response.json();
-    }
-    , {
+    }, 
         onSuccess: () => {
-            queryClient.invalidateQueries("entries");
+            queryClient.invalidateQueries({queryKey:["entries"]});
             onSave();
-            toast({
-                title: "Entry created",
-                description: "Journal created successfully"
-            });
+            toast( "Journal created successfully");
         },
         onError: (error: Error) => {
-            toast({
-                title: "Error",
-                description: error.message,
-                variant: 'destructive'
-            });
+            toast( error.message);
         }
     });
+
     interface UpdateEntryMutationData{
         id: string;
         title: string;
@@ -76,7 +66,8 @@ export function EntryEditor({ initialData, categories, onSave, onCancel }: Entry
         categoryIds: string[];
         tagNames: string[];
     }
-    const updateEntryMutation = useMutation(async (data: UpdateEntryMutationData) => {
+    const updateEntryMutation = useMutation({
+        mutationFn:async (data: UpdateEntryMutationData) => {
         const response = await fetch(`/api/entries/${data.id}`, {
             method: "PUT",
             headers: {
@@ -88,40 +79,25 @@ export function EntryEditor({ initialData, categories, onSave, onCancel }: Entry
             throw new Error("An error occurred while updating the entry");
         }
         return response.json();
-    }, {
+    },
         onSuccess: () => {
-            queryClient.invalidateQueries("entries");
+            queryClient.invalidateQueries({queryKey:["entries"]});
             onSave();
-            toast({
-                title: "Entry updated",
-                description: "Journal updated successfully"
-            });
+            toast( "Journal updated successfully");
         },
         onError: (error: Error) => {
-            toast({
-                title: "Error",
-                description: error.message,
-                variant: 'destructive'
-            });
+            toast(error.message);
         }
     });
     
     const handleSave = () => {
         if(!title.trim()){
-            toast({
-                title: "Error",
-                description: "Please enter a title for your entry",
-                variant: 'destructive'
-            });
+            toast("Please enter a title for your entry");
             return;
         }
 
         if(!editor?.getHTML() || editor.getHTML().trim() === "<p></p>"){
-            toast({
-                title: "Error",
-                description: "Please enter some content for your entry",
-                variant: 'destructive'
-            });
+            toast("Please enter some content for your entry");
             return;
         }
 
@@ -133,7 +109,7 @@ export function EntryEditor({ initialData, categories, onSave, onCancel }: Entry
             tagNames: tags
         }
         
-        if(initialEntryData?.id){
+        if(initialData?.id){
             updateEntryMutation.mutate({
                 id: initialData?.id,
                 ...entryData
@@ -173,8 +149,8 @@ export function EntryEditor({ initialData, categories, onSave, onCancel }: Entry
         <div className="space-y-2">
             <Label htmlFor="categories">Categories</Label>
             <div className="flex flex-wrap gap-2">
-                {categories.map((category)=>(
-                    <Button key={category.id}
+                {categories?.map((category)=>(
+                    <Button key={category?.id}
                         variant={selectedCategoryIds.includes(category.id)? "default":"outline"}
                         onClick={()=>{
                             if(selectedCategoryIds.includes(category.id)){
@@ -193,10 +169,7 @@ export function EntryEditor({ initialData, categories, onSave, onCancel }: Entry
             <Label htmlFor="tags">Tags</Label>
             <div className="flex items-center gap-2">
                 <Input id="tags" value={tagInput} onChange={(e)=>{
-                    if(e.key === 'Enter'){
-                        e.preventDefault()
-                        addTag()
-                    }
+                    setTagInput(e.target.value)
                 }}/>
                 <Button type="button" onClick={addTag}>Add Tag</Button>
             </div>
@@ -215,8 +188,8 @@ export function EntryEditor({ initialData, categories, onSave, onCancel }: Entry
         </div>
         <div className="flex justify-end gap-2">
             <Button variant="outline" onClick={onCancel}>Cancel</Button>
-            <Button onClick={handleSave} disabled={createEntryMutation.isLoading || updateEntryMutation.isLoading}>
-                {createEntryMutation.isLoading || updateEntryMutation.isLoading ? 'Saving...': initialData?.id ? "Update Entry" : "Save Entry"} 
+            <Button onClick={handleSave} disabled={createEntryMutation.status === "pending" || updateEntryMutation.status === "pending"}>
+                {createEntryMutation.status === "pending" || updateEntryMutation.status === "pending" ? 'Saving...': initialData?.id ? "Update Entry" : "Save Entry"} 
             </Button>
         </div>
     </div>

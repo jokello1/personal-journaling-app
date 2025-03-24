@@ -1,9 +1,7 @@
-import { PrismaClient } from "@prisma/client";
 import { NextResponse } from "next/server";
 import bcrypt from "bcrypt";
 import { z as zod } from "zod"
-
-const prisma = new PrismaClient();
+import prisma from "@/lib/prisma";
 
 const registerSchema = zod.object({
     name: zod.string().min(3).max(50),
@@ -11,7 +9,7 @@ const registerSchema = zod.object({
     password: zod.string().min(8).max(13)
 });
 
-export async function registerUser(request: Request) {
+export async function POST(request: Request) {
     try{
         const body = await request.json()
         const {name, email, password} = registerSchema.parse(body)

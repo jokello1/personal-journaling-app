@@ -1,9 +1,7 @@
 import NextAuth, { NextAuthOptions } from "next-auth";
-import {PrismaClient} from "@prisma/client";
+import prisma from "@/lib/prisma";
 import ClientCredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcrypt";
-
-const prisma = new PrismaClient();
 
 export const authOptions: NextAuthOptions = {
     providers: [
@@ -14,6 +12,7 @@ export const authOptions: NextAuthOptions = {
                 password: { label: "Password", type: "password" }
             },
             async authorize(credentials) {
+                console.log("credentials", credentials)
                 if (!credentials?.email || !credentials?.password) {
                     return null;
                 }
@@ -39,13 +38,17 @@ export const authOptions: NextAuthOptions = {
     ],
     session: {
         strategy: "jwt",
+        maxAge: 24 * 60 * 60, 
     },
     callbacks: {
-        async session({session, token}){
-            if(token) {
-                session.user.id = token.id as string
+        async session({ session, token }) {
+            if (token) {
+                session.user = {
+                    ...session.user,
+                    id: token.id as string,
+                };
             }
-            return session
+            return session;
         },
         async jwt({token, user}) {
             if(user) {
@@ -54,11 +57,12 @@ export const authOptions: NextAuthOptions = {
             return token
         }
     },
+    secret: process.env.NEXTAUTH_SECRET,
     pages: {
-        signIn: "/login"
+        signIn: '/login'
     },
-    secret: process.env.NEXTAUTH_SECRET
 };
 
 const handler = NextAuth(authOptions);
-export {handler as GET, handler as POST};
+
+export { handler as GET, handler as POST };

@@ -1,16 +1,14 @@
-import { PrismaClient } from "@prisma/client";
 import { CreateEntryInput, UpdateEntryInput } from "./types/interfaces";
-
-const prisma = new PrismaClient();
+import prisma from "@/lib/prisma";
 
 export class EntryService {
     async createEntry(create_entry_input: CreateEntryInput) {
         const { title, content, userId, mood, categoryIds, tagNames } = create_entry_input;
-
+        console.log("Create Entry Input:", create_entry_input);
         const tagObjs = await Promise.all(
             tagNames.map(async (tagName) => {
                 const existingTag = await prisma.tag.findFirst({
-                    where: { name, userId }
+                    where: { name:tagName, userId }
                 });
                 if (existingTag) { return existingTag; }
                 return prisma.tag.create({
@@ -27,7 +25,7 @@ export class EntryService {
                 mood,
                 userId,
                 categories: {
-                    create: categoryIds.map((categoryId, index) => ({ categoryId, primary: index === 0 }))
+                    create: categoryIds.map((categoryId) => ({ categoryId}))
                 },
                 tags: {
                     create: tagIds.map((tagId) => ({ tagId }))
@@ -75,7 +73,7 @@ export class EntryService {
                         data: {
                             entryId: id,
                             categoryId,
-                            primary: index === 0
+                            // primary: index === 0
                         }
                     });
                 })
@@ -186,9 +184,9 @@ export class EntryService {
         const [entries, totalCount] = await Promise.all([
             prisma.entry.findMany({
                 where,
-                offset,
+                skip: offset,
                 take: limit,
-                orderby: { createdAt: 'desc' },
+                orderBy: { createdAt: 'desc' },
                 include: {
                     categories: {
                         include: {

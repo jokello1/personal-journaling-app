@@ -14,7 +14,7 @@ const createEntrySchema = zod.object({
     tagNames: zod.array(zod.string()).min(1)
 });
 
-export async function createEntry(request: Request) {
+export async function POST(request: Request) {
     try{
         const session = await getServerSession(authOptions);
         if(!session) {
@@ -31,11 +31,12 @@ export async function createEntry(request: Request) {
         if(error instanceof zod.ZodError) {
             return NextResponse.json({error: error.errors}, { status: 400 })
         }
+        console.error("Post Error creating entry", error);
         return NextResponse.json({error: "Invalid request body"}, { status: 500 })
     }
 }
 
-export async function getUserEntries(request: Request) {
+export async function GET(request: Request) {
     try {
         const session = await getServerSession(authOptions);
         if(!session) {
@@ -48,8 +49,10 @@ export async function getUserEntries(request: Request) {
         const categoryId = searchParams.get("categoryId") || undefined;
         const tagId = searchParams.get("tagId") || undefined;
         const searchTerm = searchParams.get("search") || undefined;
-        const startDate = (new Date(searchParams.get("startDate") as string)) ||  undefined;
-        const endDate = (new Date(searchParams.get("endDate") as string)) || undefined;
+        const startDateStr = searchParams.get("startDate") || undefined;
+        const endDateStr = searchParams.get("endDate") || undefined;
+        const startDate = startDateStr? new Date(startDateStr) :  undefined;
+        const endDate = endDateStr? new Date(endDateStr) : undefined;
         
         const result = await entryService.getUserEntries(session.user.id, {
             page,

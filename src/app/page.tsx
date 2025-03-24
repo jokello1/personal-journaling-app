@@ -1,103 +1,185 @@
-import Image from "next/image";
+"use client";
+import React from 'react';
+import { useRouter } from 'next/navigation';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { CalendarIcon, BookOpenIcon, BarChartIcon, PenIcon } from 'lucide-react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { link } from 'fs';
+
+
+const queryClient = new QueryClient();
 
 export default function Home() {
+  const router = useRouter();
+  const links = {
+    "dashboard": "/dashboard",
+    "new-entry": "/dashboard/entries/new",
+    "view-entries": "/dashboard",
+    "analytics": "/dashboard/analytics",
+    "settings": "/settings/reminders"
+  }
+  const featuresData = [
+    {
+      title: "Write Journal Entries",
+      description: "Capture your thoughts, experiences, and reflections in a structured format with rich text editing.",
+      icon: <PenIcon className="h-10 w-10 text-indigo-500" />,
+      action: "New Entry",
+      path: links["new-entry"]
+    },
+    {
+      title: "Review Past Entries",
+      description: "Browse through your journal history, search by keyword, and filter by categories or tags.",
+      icon: <BookOpenIcon className="h-10 w-10 text-emerald-500" />,
+      action: "View Entries",
+      path: links["view-entries"]
+    },
+    {
+      title: "Track Insights",
+      description: "Visualize your journaling habits, mood patterns, and writing consistency over time.",
+      icon: <BarChartIcon className="h-10 w-10 text-amber-500" />,
+      action: "See Analytics",
+      path: links["analytics"]
+    },
+    {
+      title: "Daily Reminders",
+      description: "Set up custom reminders to maintain a consistent journaling practice.",
+      icon: <CalendarIcon className="h-10 w-10 text-blue-500" />,
+      action: "Set Reminders",
+      path: links["settings"]
+    }
+  ];
+  
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+      <div className="flex flex-col min-h-screen">
+        <header className="bg-white border-b border-slate-200 py-4">
+          <div className="container mx-auto px-4">
+            <div className="flex justify-between items-center">
+              <h1 className="text-2xl font-bold text-slate-800">MyJournal</h1>
+              <div className="flex gap-4">
+                <Button variant="ghost" onClick={() => router.push(links["view-entries"])}>
+                  Entries
+                </Button>
+                <Button variant="ghost" onClick={() => router.push(links["analytics"])}>
+                  Analytics
+                </Button>
+                <Button variant="ghost" onClick={() => router.push(links["settings"])}>
+                  Settings
+                </Button>
+                <Button onClick={() => router.push(links["new-entry"])}>
+                  New Entry
+                </Button>
+              </div>
+            </div>
+          </div>
+        </header>
+        
+        <main className="flex-grow">
+          <section className="bg-gradient-to-b from-indigo-50 to-white py-16">
+            <div className="container mx-auto px-4">
+              <div className="max-w-3xl mx-auto text-center">
+                <h1 className="text-4xl font-bold text-slate-900 mb-4">
+                  Your Personal Journaling Space
+                </h1>
+                <p className="text-xl text-slate-600 mb-8">
+                  Capture your thoughts, track your growth, and gain insights from your daily reflections.
+                </p>
+                <div className="flex justify-center gap-4">
+                  <Button 
+                    size="lg"
+                    onClick={() => router.push(links["new-entry"])}
+                    className="bg-indigo-600 hover:bg-indigo-700"
+                  >
+                    Start Writing
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="lg"
+                    onClick={() => router.push(links["dashboard"])}
+                  >
+                    Go to Dashboard
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </section>
+          
+          <section className="py-16">
+            <div className="container mx-auto px-4">
+              <h2 className="text-3xl font-bold text-center mb-12">Journaling Made Simple</h2>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {featuresData.map((feature, index) => (
+                  <Card key={index} className="hover:shadow-md transition-shadow">
+                    <CardHeader>
+                      <div className="mb-4">{feature.icon}</div>
+                      <CardTitle>{feature.title}</CardTitle>
+                      <CardDescription>{feature.description}</CardDescription>
+                    </CardHeader>
+                    <CardFooter>
+                      <Button 
+                        variant="outline" 
+                        className="w-full"
+                        onClick={() => router.push(feature.path)}
+                      >
+                        {feature.action}
+                      </Button>
+                    </CardFooter>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          </section>
+          
+          <section className="bg-slate-50 py-16">
+            <div className="container mx-auto px-4">
+              <div className="max-w-5xl mx-auto">
+                <h2 className="text-3xl font-bold text-center mb-12">Your Journal Dashboard</h2>
+                
+                <div className="bg-white p-6 rounded-lg shadow-md">
+                  <div className="text-center mb-8">
+                    <p className="text-slate-600">
+                      Track your writing habits, review insights, and access your recent entries all in one place.
+                    </p>
+                  </div>
+                  
+                  <div className="flex justify-center">
+                    <Button 
+                      size="lg" 
+                      onClick={() => router.push(links["dashboard"])}
+                      className="bg-indigo-600 hover:bg-indigo-700"
+                    >
+                      View Dashboard
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </main>
+        
+        <footer className="bg-slate-800 text-white py-8">
+          <div className="container mx-auto px-4">
+            <div className="flex flex-col md:flex-row justify-between items-center">
+              <div className="mb-4 md:mb-0">
+                <h3 className="text-xl font-bold">MyJournal</h3>
+                <p className="text-slate-300">Your personal journaling companion</p>
+              </div>
+              
+              <div className="flex gap-6">
+                <Button variant="ghost" className="text-white hover:text-white hover:bg-slate-700" onClick={() => router.push('/help')}>
+                  Help
+                </Button>
+                <Button variant="ghost" className="text-white hover:text-white hover:bg-slate-700" onClick={() => router.push('/privacy')}>
+                  Privacy
+                </Button>
+                <Button variant="ghost" className="text-white hover:text-white hover:bg-slate-700" onClick={() => router.push('/terms')}>
+                  Terms
+                </Button>
+              </div>
+            </div>
+          </div>
+        </footer>
+      </div>
   );
 }

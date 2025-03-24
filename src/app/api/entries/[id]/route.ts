@@ -1,6 +1,5 @@
 import { EntryService } from "@/app/lib/services/entry.services";
 import { getServerSession } from "next-auth";
-import { title } from "process";
 import { z as zod} from "zod";
 import { authOptions } from "../../auth/[...nextauth]/route";
 import { NextResponse } from "next/server";
@@ -16,13 +15,13 @@ const updateEntrySchema = zod.object({
     tagNames: zod.array(zod.string()).min(1).optional()
 });
 
-export async function getUserEntry(request: Request, {params}: {params: {id: string}}) {
+export async function GET(request: Request, {params}: {params: {id: string}}) {
     try{
         const session = await getServerSession(authOptions);
         if(!session){
             return NextResponse.json({error: "Unauthorized"}, { status: 401 });
         }
-        const entry = await entryService.getEntry(params.id);
+        const entry = await entryService.getEntry(params?.id!!);
         if(entry.userId !== session.user.id){
             return NextResponse.json({error: "Forbidden"}, { status: 403 });
         }
@@ -32,7 +31,7 @@ export async function getUserEntry(request: Request, {params}: {params: {id: str
     }
 }
 
-export async function updateEntry(request: Request, {params}: {params: {id: string}}) {
+export async function PUT(request: Request, {params}: {params: {id: string}}) {
     try{
         const session = await getServerSession(authOptions);
         if(!session){
@@ -45,7 +44,7 @@ export async function updateEntry(request: Request, {params}: {params: {id: stri
             return NextResponse.json({error: "Forbidden"}, { status: 403 });
         }
         const updatedEntry = await entryService.updateEntry({
-            id: params.id,
+            id: params?.id!!,
             ...validatedData
         } as UpdateEntryInput);
         return NextResponse.json(updatedEntry, { status: 200 });
@@ -57,13 +56,13 @@ export async function updateEntry(request: Request, {params}: {params: {id: stri
     }
 }
 
-export async function deleteEntry(request: Request, {params}: {params: {id: string}}) {
+export async function DELETE(request: Request, {params}: {params: {id: string}}) {
     try{
         const session = await getServerSession(authOptions);
         if(!session){
             return NextResponse.json({error: "Unauthorized"}, { status: 401 });
         }
-        const entry = await entryService.getEntry(params.id);
+        const entry = await entryService.getEntry(params?.id);
         if(entry.userId !== session.user.id){
             return NextResponse.json({error: "Forbidden"}, { status: 403 });
         }

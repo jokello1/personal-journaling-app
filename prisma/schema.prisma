@@ -52,7 +52,7 @@ model Entry{
   createdAt           DateTime  @default(now()) @map("created_at")
   updateAt            DateTime  @updatedAt  @map("updated_at")
 
-  @@map("entries)
+  @@map("entries")
 }
 
 model Category {
@@ -79,7 +79,7 @@ model Tag {
   updateAt           DateTime @updatedAt  @map("updated_at")
 
   @@unique([userId,name])
-  @@map("categories")
+  @@map("tags")
 }
 
 model EntryCategory {
