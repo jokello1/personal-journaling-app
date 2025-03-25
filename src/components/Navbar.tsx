@@ -44,6 +44,14 @@ export function Navbar() {
           >
             Analytics
           </Link>
+          <Link
+            href="/dashboard/settings"
+            className={`text-sm font-medium ${
+              pathname === '/dashboard/settings' ? 'text-blue-600' : 'text-slate-700 hover:text-blue-600'
+            }`}
+          >
+            Settings
+          </Link>
         </nav>
         
         <div className="flex items-center gap-4">

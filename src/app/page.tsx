@@ -17,7 +17,7 @@ export default function Home() {
     "new-entry": "/dashboard/entries/new",
     "view-entries": "/dashboard",
     "analytics": "/dashboard/analytics",
-    "settings": "/settings/reminders"
+    "settings": "/dashboard/settings"
   }
   const featuresData = [
     {

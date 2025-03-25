@@ -1,4 +1,3 @@
-// app/services/category-service.ts
 import prisma  from "@/lib/prisma";
 import { Category } from "./types/interfaces";
 

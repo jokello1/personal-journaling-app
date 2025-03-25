@@ -2,11 +2,10 @@ import React, { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Editor, useEditor, EditorContent } from '@tiptap/react';
+import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Placeholder from '@tiptap/extension-placeholder';
-import { AlertCircle, Lightbulb } from 'lucide-react';
+import { Lightbulb } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -156,15 +155,7 @@ export function EntryForm({ initialData, onSave, onCancel }: EntryFormProps) {
 
   useEffect(() => {
     debouncedAnalyze(content);
-
-    // if (primaryCategory) {
-    //   const filteredCategories = selectedCategoryIds.filter(
-    //     id => id !== initialData?.categoryIds[0]
-    //   );
-      
       setSelectedCategoryIds([primaryCategory]);
-    //   console.log("Selected Category Ids: ",selectedCategoryIds);
-    // }
     if (categories){
       setCategoriesData(categories);
       setCategoriesLoading(false);
@@ -283,7 +274,7 @@ export function EntryForm({ initialData, onSave, onCancel }: EntryFormProps) {
                         <div className="space-y-2">
                           <div className="text-sm">Suggested Tags:</div>
                           <div className="flex flex-wrap gap-1">
-                            {analysis.suggestedTags.map((tag) => (
+                            {analysis.suggestedTags.map((tag:string) => (
                               <Button
                                 key={tag}
                                 variant="secondary"
@@ -354,7 +345,6 @@ export function EntryForm({ initialData, onSave, onCancel }: EntryFormProps) {
               <SelectValue placeholder="How are you feeling?" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value='...'>Not specified</SelectItem>
               <SelectItem value="Happy">Happy</SelectItem>
               <SelectItem value="Calm">Calm</SelectItem>
               <SelectItem value="Productive">Productive</SelectItem>

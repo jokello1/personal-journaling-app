@@ -1,4 +1,4 @@
-import { authOptions } from "@/app/api/auth/[...nextauth]"
+import { authOptions } from "@/app/api/auth/[...nextauth]/route"
 import withAuth from "next-auth/middleware"
 
 export default withAuth({
@@ -11,5 +11,5 @@ export default withAuth({
   }
 })
 export const config = {
-  matcher: ["/dashboard"]
+  matcher: ["/dashboard","/analytics"]
 }

@@ -2,7 +2,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { BookOpenText, LineChart } from 'lucide-react';
+import { BookOpenText, LineChart, SettingsIcon } from 'lucide-react';
 
 export function Sidebar() {
   const pathname = usePathname();
@@ -17,6 +17,11 @@ export function Sidebar() {
       title: 'Analytics',
       href: '/dashboard/analytics',
       icon: <LineChart className="h-5 w-5" />,
+    },
+    {
+      title: 'Settings',
+      href: '/dashboard/settings',
+      icon: <SettingsIcon className="h-5 w-5" />,
     },
   ];
   
