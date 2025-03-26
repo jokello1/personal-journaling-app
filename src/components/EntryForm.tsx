@@ -14,6 +14,7 @@ import { Category, EntryFormProps } from '@/app/lib/services/types/interfaces';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { Textarea } from './ui/textarea';
 
 
 export function EntryForm({ initialData, onSave, onCancel }: EntryFormProps) {
@@ -58,7 +59,6 @@ export function EntryForm({ initialData, onSave, onCancel }: EntryFormProps) {
       categoryIds: string[];
       tagNames: string[];
     }) => {
-      console.log("Payload data: ",data);
       const response = await fetch("/api/entries", {
         method: "POST",
         headers: {
@@ -121,14 +121,14 @@ export function EntryForm({ initialData, onSave, onCancel }: EntryFormProps) {
       return;
     }
 
-    if (!editor?.getHTML() || editor.getHTML().trim() === "<p></p>") {
-      toast("Please enter some content for your entry");
-      return;
-    }
+    // if (!editor?.getHTML() || editor.getHTML().trim() === "<p></p>") {
+    //   toast("Please enter some content for your entry");
+    //   return;
+    // }
 
     const entryData = {
       title,
-      content: editor.getHTML(),
+      content: content,
       mood: mood || undefined,
       categoryIds: selectedCategoryIds,
       tagNames: tags
@@ -297,7 +297,9 @@ export function EntryForm({ initialData, onSave, onCancel }: EntryFormProps) {
         </div>
         <div className="space-y-2">
           <div className="border rounded-md p-3 min-h-[200px]">
-            <EditorContent editor={editor} className="prose max-w-none" />
+            {/* <EditorContent editor={editor} className="prose max-w-none" /> */}
+            <Textarea value={content} className='min-h-[196px] w-full' onChange={(e)=>setContent(e.target.value)}/>
+          
           </div>
         </div>
       </div>

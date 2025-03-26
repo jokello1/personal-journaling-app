@@ -1,5 +1,5 @@
 'use client';
-import { EntryEditorProps } from "@/app/lib/services/types/interfaces";
+import { Category, EntryEditorProps } from "@/app/lib/services/types/interfaces";
 import { useState } from "react";
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
@@ -8,14 +8,16 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from "sonner"
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Textarea } from "./ui/textarea";
 
-export function EntryEditor({ initialData, categories, onSave, onCancel }: EntryEditorProps) {
+export function EntryEditor({ initialData, onSave, onCancel }: EntryEditorProps) {
     const [selectedCategoryIds, setSelectedCategoryIds] = useState(initialData?.categoryIds || []);
     const [tagInput, setTagInput] = useState("");
     const [mood, setMood] = useState(initialData?.mood || '')
     const [title, setTitle] = useState(initialData?.title || '')
     const [tags, setTags] = useState(initialData?.tagNames || [])
+    const [content,setContent]=useState(initialData?.content)
 
     const queryClient = useQueryClient();
     const editor = useEditor({
@@ -27,11 +29,19 @@ export function EntryEditor({ initialData, categories, onSave, onCancel }: Entry
         ],
         content: initialData?.content || ""
     });
+    const { data: categories, isLoading, error } = useQuery<Category[]>({
+        queryKey: ['categories'],
+        queryFn: async () => {
+          const res = await fetch(`/api/categories`);
+          if (!res.ok) throw new Error('Failed to fetch entry');
+          return await res.json();
+        }
+      });
 
     const createEntryMutation = useMutation({
         mutationFn:async (data: {
         title: string;
-        content: string;
+        content: string | undefined;
         mood?: string;
         categoryIds: string[];
         tagNames: string[];
@@ -96,14 +106,14 @@ export function EntryEditor({ initialData, categories, onSave, onCancel }: Entry
             return;
         }
 
-        if(!editor?.getHTML() || editor.getHTML().trim() === "<p></p>"){
-            toast("Please enter some content for your entry");
-            return;
-        }
+        // if(!editor?.getHTML() || editor.getHTML().trim() === "<p></p>"){
+        //     toast("Please enter some content for your entry");
+        //     return;
+        // }
 
         const entryData = {
             title,
-            content: editor.getHTML(),
+            content: content,
             mood: mood || undefined,
             categoryIds: selectedCategoryIds,
             tagNames: tags
@@ -137,7 +147,9 @@ export function EntryEditor({ initialData, categories, onSave, onCancel }: Entry
         <div className="space-y-2">
             <Label htmlFor="content">Content</Label>
             <div className="border rounded-md p-3 min-h-[200px]">
-                <EditorContent editor={editor} className="prose max-w-none"/>
+                {/* <EditorContent editor={editor} className="prose max-w-none"/> */}
+                <Textarea value={content} className='min-h-[196px] w-full' onChange={(e)=>setContent(e.target.value)}/>
+          
             </div>
         </div>
 
@@ -152,6 +164,7 @@ export function EntryEditor({ initialData, categories, onSave, onCancel }: Entry
                 {categories?.map((category)=>(
                     <Button key={category?.id}
                         variant={selectedCategoryIds.includes(category.id)? "default":"outline"}
+                        disabled={selectedCategoryIds.includes(category.id)}
                         onClick={()=>{
                             if(selectedCategoryIds.includes(category.id)){
                                 setSelectedCategoryIds(selectedCategoryIds.filter((id)=>id !== category.id))
@@ -159,8 +172,8 @@ export function EntryEditor({ initialData, categories, onSave, onCancel }: Entry
                                 setSelectedCategoryIds([...selectedCategoryIds, category.id])
                             }
                         }}
-                        className="flex items-center gap-2">
-                            <div className="w-3 h-3 rounded-full" style={{backgroundColor: category.color}}>{category.name}</div>
+                        className="flex items-center gap-2" style={{backgroundColor: category.color}}>
+                            <div className="w-max rounded-full">{category.name}</div>
                         </Button>
                 ))}
             </div>
@@ -171,14 +184,14 @@ export function EntryEditor({ initialData, categories, onSave, onCancel }: Entry
                 <Input id="tags" value={tagInput} onChange={(e)=>{
                     setTagInput(e.target.value)
                 }}/>
-                <Button type="button" onClick={addTag}>Add Tag</Button>
+                <Button type="button" onClick={addTag} className="bg-indigo-600 hover:bg-indigo-700">Add Tag</Button>
             </div>
             <div className="flex flex-wrap gap-2 mt-2">
                 {
                     tags.map((tag)=>(
-                        <div key={tag} className="bg-slate-100 px-3 py-1 rounded-full flex items-center gap-2">
+                        <div key={tag} className="bg-slate-100 px-3 py-1 rounded-full flex items-center gap-2 dark:bg-gray-600">
                             <span>{tag}</span>
-                            <button type="button" onClick={()=>removeTag(tag)} className="text-slate-500 hover:text-slate-700">
+                            <button type="button" onClick={()=>removeTag(tag)} className="text-slate-500 hover:text-slate-700 dark:text-gray-100">
                                 &times;
                             </button>
                         </div>
@@ -188,7 +201,7 @@ export function EntryEditor({ initialData, categories, onSave, onCancel }: Entry
         </div>
         <div className="flex justify-end gap-2">
             <Button variant="outline" onClick={onCancel}>Cancel</Button>
-            <Button onClick={handleSave} disabled={createEntryMutation.status === "pending" || updateEntryMutation.status === "pending"}>
+            <Button onClick={handleSave} disabled={createEntryMutation.status === "pending" || updateEntryMutation.status === "pending"} className="bg-indigo-600 hover:bg-indigo-700">
                 {createEntryMutation.status === "pending" || updateEntryMutation.status === "pending" ? 'Saving...': initialData?.id ? "Update Entry" : "Save Entry"} 
             </Button>
         </div>

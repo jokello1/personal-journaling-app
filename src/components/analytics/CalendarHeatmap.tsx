@@ -24,7 +24,7 @@ export function CalendarHeatmap({ data }: CalendarHeatmapProps) {
   const maxCount = Math.max(...(data?.map((item) => item.count) || [0]));
   
   const getColorIntensity = (count: number) => {
-    if (count === 0) return 'bg-slate-100';
+    if (count === 0) return 'bg-slate-100 dark:bg-gray-800';
     const intensity = Math.min(Math.ceil((count / maxCount) * 4), 4);
     
     switch (intensity) {
@@ -42,7 +42,7 @@ export function CalendarHeatmap({ data }: CalendarHeatmapProps) {
   };
   
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 dark:bg-gray-900">
       <div className="grid grid-cols-7 gap-1">
         {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
           <div key={day} className="text-xs text-center text-slate-500">
@@ -59,7 +59,7 @@ export function CalendarHeatmap({ data }: CalendarHeatmapProps) {
           return (
             <div
               key={dateStr}
-              className={`h-10 rounded-sm ${getColorIntensity(count)}`}
+              className={`h-10 rounded-sm  ${getColorIntensity(count)}`}
               title={`${format(date, 'MMM d')}: ${count} entries`}
             />
           );

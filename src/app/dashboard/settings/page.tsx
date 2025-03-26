@@ -1,21 +1,34 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { 
-  Form, 
-  FormControl, 
-  FormDescription, 
-  FormField, 
-  FormItem, 
-  FormLabel 
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel
 } from '@/components/ui/form';
 import { toast } from 'sonner';
+import { useQuery } from '@tanstack/react-query';
+import { UserSettings } from '@/app/lib/services/types/interfaces';
+import { useTheme } from 'next-themes';
+// const { theme, setTheme } = useTheme()
+
+//  useEffect(() => {
+//     console.log("userSettings", userSettings)
+//     if (userSettings && userSettings.darkMode) {
+//       setTheme('dark')
+//     } else {
+//         setTheme((theme === 'dark'?'dark':'light'))
+//     }
+//   }, [userSettings])
 
 const settingsSchema = z.object({
   darkMode: z.boolean().default(false),
@@ -25,13 +38,32 @@ const settingsSchema = z.object({
 type SettingsFormData = z.infer<typeof settingsSchema>;
 
 export default function Settings() {
+
+  const { data: userSettings, isLoading: userSettingsLoading } = useQuery({
+    queryKey: ['settings'],
+    queryFn: async () => {
+      const res = await fetch('/api/settings');
+      if (!res.ok) throw new Error('Failed to fetch categories');
+      return await res.json();
+    }
+  }
+  );
+  const { theme, setTheme } = useTheme()
+
+  useEffect(() => {
+    if (userSettings && userSettings.darkMode) {
+      setTheme('dark')
+    } else {
+      setTheme((theme === 'dark' ? 'dark' : 'light'))
+    }
+  }, [userSettings])
   const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<SettingsFormData>({
     resolver: zodResolver(settingsSchema),
     defaultValues: {
-      darkMode: false,
-      emailNotifications: true
+      darkMode: userSettings?.darkMode || false,
+      emailNotifications: userSettings?.emailNotifications || true
     }
   });
 
@@ -52,7 +84,7 @@ export default function Settings() {
 
       toast("Your preferences have been successfully saved.",);
     } catch (error) {
-      toast( "Unable to update settings. Please try again.");
+      toast("Unable to update settings. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -61,7 +93,7 @@ export default function Settings() {
   return (
     <div className="container mx-auto px-4 py-8 max-w-2xl">
       <h1 className="text-3xl font-bold mb-6">Account Settings</h1>
-      
+
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <Card>
@@ -117,8 +149,8 @@ export default function Settings() {
             </CardContent>
           </Card>
 
-          <Button 
-            type="submit" 
+          <Button
+            type="submit"
             disabled={isLoading}
             className="w-full"
           >

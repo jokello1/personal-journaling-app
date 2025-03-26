@@ -4,11 +4,6 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { CalendarIcon, BookOpenIcon, BarChartIcon, PenIcon } from 'lucide-react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { link } from 'fs';
-
-
-const queryClient = new QueryClient();
 
 export default function Home() {
   const router = useRouter();
@@ -52,10 +47,10 @@ export default function Home() {
   
   return (
       <div className="flex flex-col min-h-screen">
-        <header className="bg-white border-b border-slate-200 py-4">
+        <header className="bg-white border-b border-slate-200 py-4 dark:bg-black">
           <div className="container mx-auto px-4">
             <div className="flex justify-between items-center">
-              <h1 className="text-2xl font-bold text-slate-800">MyJournal</h1>
+              <h1 className="text-2xl font-bold text-slate-800  dark:text-white">MyJournal</h1>
               <div className="flex gap-4">
                 <Button variant="ghost" onClick={() => router.push(links["view-entries"])}>
                   Entries
@@ -66,7 +61,8 @@ export default function Home() {
                 <Button variant="ghost" onClick={() => router.push(links["settings"])}>
                   Settings
                 </Button>
-                <Button onClick={() => router.push(links["new-entry"])}>
+                <Button className="bg-indigo-600 hover:bg-indigo-700" 
+                    onClick={() => router.push(links["new-entry"])}>
                   New Entry
                 </Button>
               </div>
@@ -74,8 +70,8 @@ export default function Home() {
           </div>
         </header>
         
-        <main className="flex-grow">
-          <section className="bg-gradient-to-b from-indigo-50 to-white py-16">
+        <main className="flex-grow dark:bg-gray-800 dark:text-white">
+          <section className="bg-gradient-to-b from-indigo-50 to-white dark:to-gray-800 py-16">
             <div className="container mx-auto px-4">
               <div className="max-w-3xl mx-auto text-center">
                 <h1 className="text-4xl font-bold text-slate-900 mb-4">
@@ -131,14 +127,14 @@ export default function Home() {
             </div>
           </section>
           
-          <section className="bg-slate-50 py-16">
+          <section className="bg-slate-50 py-16 dark:bg-gray-800">
             <div className="container mx-auto px-4">
               <div className="max-w-5xl mx-auto">
                 <h2 className="text-3xl font-bold text-center mb-12">Your Journal Dashboard</h2>
                 
-                <div className="bg-white p-6 rounded-lg shadow-md">
+                <div className="bg-white p-6 rounded-lg shadow-md dark:bg-black">
                   <div className="text-center mb-8">
-                    <p className="text-slate-600">
+                    <p className="text-slate-600 dark:text-white">
                       Track your writing habits, review insights, and access your recent entries all in one place.
                     </p>
                   </div>
@@ -147,7 +143,7 @@ export default function Home() {
                     <Button 
                       size="lg" 
                       onClick={() => router.push(links["dashboard"])}
-                      className="bg-indigo-600 hover:bg-indigo-700"
+                      className="bg-indigo-600 hover:bg-indigo-700 dark:text-white"
                     >
                       View Dashboard
                     </Button>
@@ -158,7 +154,7 @@ export default function Home() {
           </section>
         </main>
         
-        <footer className="bg-slate-800 text-white py-8">
+        <footer className="bg-slate-800 text-white py-8 dark:bg-black">
           <div className="container mx-auto px-4">
             <div className="flex flex-col md:flex-row justify-between items-center">
               <div className="mb-4 md:mb-0">

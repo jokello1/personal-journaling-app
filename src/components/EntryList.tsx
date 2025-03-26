@@ -3,71 +3,70 @@ import { Category, EntriesResponse, EntryListProps } from "@/app/lib/services/ty
 import { useState } from "react";
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { CalendarIcon, FilterIcon, SearchIcon } from 'lucide-react';
+import { FilterIcon, SearchIcon, X } from 'lucide-react';
 import { Pagination } from '@/components/ui/pagination';
-import {Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Skeleton } from "./ui/skeleton";
-import { format } from 'date-fns';
 import { useQuery } from "@tanstack/react-query";
+import { EntryCard } from "./EntryCard";
 
-export function EntryList({onEntryClick, onNewEntry}: EntryListProps){
-    const [searchTerm,setSearchTerm] = useState("")
-    const [selectedCategory, setSelectedCategory] = useState<string>('')
-    const [page, setPage] = useState(1)
-    const [isFilterOpen, setIsFilterOpen] = useState(false)
+export function EntryList({ onEntryClick, onNewEntry }: EntryListProps) {
+  const [searchTerm, setSearchTerm] = useState("")
+  const [selectedCategory, setSelectedCategory] = useState<string>('')
+  const [page, setPage] = useState(1)
+  const [isFilterOpen, setIsFilterOpen] = useState(false)
 
-    const {data: categoriesData, isLoading: categoriesLoading } = useQuery<Category[]>({
-        queryKey: ['categories'],
-        queryFn: async () => {
-            const res = await fetch('/api/categories');
-            if(!res.ok) throw new Error('Failed to fetch categories');
-            return res.json();
-        }
-      }
-    );
-    const {data, isLoading, error, refetch}=useQuery<EntriesResponse>({
-      queryKey: ['entries',page,searchTerm,selectedCategory],
-      queryFn: async () => {
-            const params = new URLSearchParams();
-            params.append("page",page.toString())
-            params.append("limit", "10")
-            if(searchTerm) params.append("search",searchTerm);
-            if(selectedCategory) params.append("categoryId", selectedCategory);
-
-            const res = await fetch(`/api/entries?${params.toString()}`);
-            if(!res.ok) throw new Error("Failed to fetch entries");
-            return res.json()
-        }
-    });
-    const handleSearch = (e: React.FormEvent) => {
-        e.preventDefault()
-        setPage(1)
-        refetch()
+  const { data: categoriesData, isLoading: categoriesLoading } = useQuery<Category[]>({
+    queryKey: ['categories'],
+    queryFn: async () => {
+      const res = await fetch('/api/categories');
+      if (!res.ok) throw new Error('Failed to fetch categories');
+      return res.json();
     }
-    const resetFilters = () =>{
-        setSearchTerm("")
-        setSelectedCategory('')
-        setPage(1)
-        refetch()
-    }
+  }
+  );
+  const { data, isLoading, error, refetch } = useQuery<EntriesResponse>({
+    queryKey: ['entries', page, searchTerm, selectedCategory],
+    queryFn: async () => {
+      const params = new URLSearchParams();
+      params.append("page", page.toString())
+      params.append("limit", "10")
+      if (searchTerm) params.append("search", searchTerm);
+      if (selectedCategory) params.append("categoryId", selectedCategory);
 
-    if(error){
-        return (
-            <div className="p-4 text-red-500">
-                Error loading entries. Please try again later
-            </div>
-        )
+      const res = await fetch(`/api/entries?${params.toString()}`);
+      if (!res.ok) throw new Error("Failed to fetch entries");
+      return res.json()
     }
+  });
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault()
+    setPage(1)
+    refetch()
+  }
+  const resetFilters = () => {
+    setSearchTerm("")
+    setSelectedCategory('')
+    setPage(1)
+    refetch()
+  }
 
+  if (error) {
     return (
-        <div className="space-y-6">
-            <div className="flex items-center justify-between">
-                <h2 className="text-2xl font-bold">Your Journal Entries</h2>
-                <Button onClick={onNewEntry}>New Entry</Button>
-            </div>
-      
+      <div className="p-4 text-red-500">
+        Error loading entries. Please try again later
+      </div>
+    )
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h2 className="text-2xl font-bold">Your Journal Entries</h2>
+        <Button className="bg-indigo-600 hover:bg-indigo-700 dark:text-white" onClick={onNewEntry}>New Entry</Button>
+      </div>
+
       <div className="flex flex-col sm:flex-row gap-4">
         <form onSubmit={handleSearch} className="flex-1">
           <div className="relative">
@@ -80,7 +79,7 @@ export function EntryList({onEntryClick, onNewEntry}: EntryListProps){
             />
           </div>
         </form>
-        
+
         <Button
           variant="outline"
           onClick={() => setIsFilterOpen(!isFilterOpen)}
@@ -90,9 +89,9 @@ export function EntryList({onEntryClick, onNewEntry}: EntryListProps){
           Filters
         </Button>
       </div>
-      
+
       {isFilterOpen && (
-        <div className="bg-slate-50 rounded-md space-y-2 flex align-center justify-between">
+        <div className="bg-slate-50 rounded-md space-y-2 flex align-center justify-between dark:bg-gray-700 p-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             <div className="space-y-2">
               <label className="text-sm font-medium">Category</label>
@@ -116,15 +115,18 @@ export function EntryList({onEntryClick, onNewEntry}: EntryListProps){
               </Select>
             </div>
           </div>
-          
+
           <div className="flex justify-end">
             <Button variant="outline" size="sm" onClick={resetFilters}>
               Reset Filters
             </Button>
+            <Button className="hover:bg-red-600 mx-2" variant={"destructive"} size="sm" onClick={() => setIsFilterOpen(!isFilterOpen)}>
+              <X className={"font-md"} />
+            </Button>
           </div>
         </div>
       )}
-      
+
       <div className="space-y-4">
         {isLoading ? (
           Array.from({ length: 5 }).map((_, i) => (
@@ -149,58 +151,19 @@ export function EntryList({onEntryClick, onNewEntry}: EntryListProps){
           </div>
         ) : (
           data?.entries.map((entry) => (
-            <Card
+            <EntryCard
               key={entry.id}
-              className="cursor-pointer hover:shadow-md transition-shadow"
-              onClick={() => onEntryClick(entry.id)}
-            >
-              <CardHeader className="pb-2">
-                <CardTitle>{entry.title}</CardTitle>
-                <p className="text-sm text-slate-500">
-                  {format(new Date(entry.createdAt), 'MMMM d, yyyy')}
-                </p>
-              </CardHeader>
-              <CardContent>
-                <div
-                  className="line-clamp-2 text-slate-600 mb-3"
-                  dangerouslySetInnerHTML={{
-                    __html: entry.content.replace(/<[^>]+>/g, ' ').substring(0, 150) + '...',
-                  }}
-                />
-                
-                <div className="flex flex-wrap items-center gap-2">
-                  {entry.categories.map(
-                    ({ category, primary }) =>
-                      primary && (
-                        <div
-                          key={category.id}
-                          className="px-2 py-1 rounded-md text-xs font-medium"
-                          style={{
-                            backgroundColor: `${category.color}20`,
-                            color: category.color,
-                          }}
-                        >
-                          {category.name}
-                        </div>
-                      )
-                  )}
-                  
-                  {entry.mood && (
-                    <div className="px-2 py-1 bg-slate-100 rounded-md text-xs">
-                      Mood: {entry.mood}
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
+              entry={entry}
+              onEntryClick={() => onEntryClick(entry.id)}
+            />
           ))
         )}
-        
+
         {data && data.pagination.totalPages > 1 && (
           <Pagination
-            // currentPage={page}
-            // totalPages={data.pagination.totalPages}
-            // onPageChange={setPage}
+          // currentPage={page}
+          // totalPages={data.pagination.totalPages}
+          // onPageChange={setPage}
           />
         )}
       </div>

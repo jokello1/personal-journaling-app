@@ -24,14 +24,13 @@ export interface Category {
 
 export interface EntryEditorProps {
     initialData?: {
-        id?: string;
+        id: string;
         title: string;
         content: string;
-        mood: string;
+        mood: string | undefined;
         categoryIds: string[];
         tagNames: string[];
     },
-    categories: Category[];
     onSave: () => void;
     onCancel: () => void;
 }
@@ -90,3 +89,9 @@ export interface Entry {
       totalPages: number;
     };
   }
+  export interface UserSettings {
+      darkMode: boolean;
+      emailNotifications: boolean;
+      userId: string
+      id?: string;
+    }

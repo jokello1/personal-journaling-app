@@ -14,23 +14,24 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { ThemeToggle } from './ThemeToggler';
 
 export function Navbar() {
   const pathname = usePathname();
   const { data: session } = useSession();
   
   return (
-    <header className="border-b border-slate-200 bg-white">
+    <header className="dark:bg-black border-b border-slate-200 bg-white">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <div className="flex items-center gap-2">
           <BookOpenText className="h-6 w-6 text-blue-600" />
           <span className="text-xl font-bold">Reflective</span>
         </div>
         
-        <nav className="hidden md:flex items-center gap-6">
+        <nav className="hidden md:flex items-center gap-6 ">
           <Link
             href="/dashboard"
-            className={`text-sm font-medium ${
+            className={`text-sm font-medium dark:text-white ${
               pathname === '/dashboard' ? 'text-blue-600' : 'text-slate-700 hover:text-blue-600'
             }`}
           >
@@ -38,7 +39,7 @@ export function Navbar() {
           </Link>
           <Link
             href="/dashboard/analytics"
-            className={`text-sm font-medium ${
+            className={`text-sm font-medium dark:text-white ${
               pathname === '/dashboard/analytics' ? 'text-blue-600' : 'text-slate-700 hover:text-blue-600'
             }`}
           >
@@ -46,7 +47,7 @@ export function Navbar() {
           </Link>
           <Link
             href="/dashboard/settings"
-            className={`text-sm font-medium ${
+            className={`text-sm font-medium dark:text-white ${
               pathname === '/dashboard/settings' ? 'text-blue-600' : 'text-slate-700 hover:text-blue-600'
             }`}
           >
@@ -55,8 +56,9 @@ export function Navbar() {
         </nav>
         
         <div className="flex items-center gap-4">
+          <ThemeToggle/>
           <Link href="/dashboard/entries/new">
-            <Button size="sm">New Entry</Button>
+            <Button size="sm" className='bg-indigo-600 hover:bg-indigo-700 dark:text-white'>New Entry</Button>
           </Link>
           
           <DropdownMenu>

@@ -1,57 +1,51 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
-import { getServerSession } from 'next-auth/next';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
-import prisma from '@/lib/prisma';
+import type { NextApiRequest, NextApiResponse } from "next";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import prisma from "@/lib/prisma";
+import { SettingsService } from "@/app/lib/services/settings-service";
+import { NextResponse } from "next/server";
 
-export default async function handler(
-  req: NextApiRequest, 
-  res: NextApiResponse
-) {
-  const session = await getServerSession(req, res, authOptions);
+const settingsService = new SettingsService();
 
-  if (!session || !session.user) {
-    return res.status(401).json({ error: 'Unauthorized' });
-  }
-
-  if (req.method === 'PUT') {
-    try {
-      const { darkMode, emailNotifications } = req.body;
-      
-      const updatedSettings = await prisma.settings.upsert({
-        where: { userId: session.user.id },
-        update: {
-          darkMode,
-          emailNotifications
-        },
-        create: {
-          userId: session.user.id,
-          darkMode,
-          emailNotifications
-        }
-      });
-
-      return res.status(200).json(updatedSettings);
-    } catch (error) {
-      console.error('Settings update error:', error);
-      return res.status(500).json({ error: 'Failed to update settings' });
+export async function PUT(request: Request, {params}: {params: {id: string}}) {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+    const body = await request.json();
+    const { darkMode, emailNotifications } = body;
+
+    const updatedSettings = settingsService.updateOrCreateSettings({
+      darkMode,
+      emailNotifications,
+      userId: session.user.id,
+    });
+
+    return NextResponse.json(updatedSettings, { status: 200 });
+  } catch (error) {
+    console.error("Settings update error:", error);
+    return NextResponse.json({ error: "Failed to update settings" }, {
+      status: 500,
+    });
   }
+}
 
-  if (req.method === 'GET') {
-    try {
-      const settings = await prisma.settings.findUnique({
-        where: { userId: session.user.id }
-      });
+export async function GET(request: Request) {
+  try {
+    const session = await getServerSession(authOptions);
 
-      return res.status(200).json(settings || {
-        darkMode: false,
-        emailNotifications: true
-      });
-    } catch (error) {
-      console.error('Settings fetch error:', error);
-      return res.status(500).json({ error: 'Failed to fetch settings' });
+    if (!session || !session.user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+    const settings = await prisma.settings.findUnique({
+      where: { userId: session.user.id },
+    });
+    return NextResponse.json(settings, { status: 200 });
+  } catch (error) {
+    console.error("Settings update error:", error);
+    return NextResponse.json({ error: "Failed to update settings" }, {
+      status: 500,
+    });
   }
-
-  return res.status(405).json({ error: 'Method not allowed' });
 }
