@@ -21,7 +21,7 @@ export async function GET(request: Request, {params}: {params: {id: string}}) {
         if(!session){
             return NextResponse.json({error: "Unauthorized"}, { status: 401 });
         }
-        const entry = await entryService.getEntry(params?.id!!);
+        const entry = await entryService.getEntry(params.id);
         if(entry.userId !== session.user.id){
             return NextResponse.json({error: "Forbidden"}, { status: 403 });
         }
@@ -44,7 +44,7 @@ export async function PUT(request: Request, {params}: {params: {id: string}}) {
             return NextResponse.json({error: "Forbidden"}, { status: 403 });
         }
         const updatedEntry = await entryService.updateEntry({
-            id: params?.id!!,
+            id: params.id,
             ...validatedData
         } as UpdateEntryInput);
         return NextResponse.json(updatedEntry, { status: 200 });

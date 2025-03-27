@@ -32,12 +32,11 @@ export async function PUT(request: Request, {params}: {params: {id: string}}) {
 }
 
 export async function GET(request: Request) {
+  const session = await getServerSession(authOptions);
+  if(!session){
+      return NextResponse.json({error: "Unauthorized"}, { status: 401 });
+  }
   try {
-    const session = await getServerSession(authOptions);
-
-    if (!session || !session.user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
     const settings = await prisma.settings.findUnique({
       where: { userId: session.user.id },
     });

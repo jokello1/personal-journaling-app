@@ -186,13 +186,12 @@ export function SummaryDashboard({ timeframe: initialTimeframe }: SummaryDashboa
           <div className='flex-wrap space-y-4'>
             <Card className='h-max'>
               <CardHeader>
-                <CardTitle>Mood Over Time</CardTitle>
+                <CardTitle>CategoryDistribution</CardTitle>
               </CardHeader>
               <CardContent className="h-80">
-                <MoodDistribution
-                  data={analyticsData?.moodDistribution}
+                <CategoryDistribution
+                  data={analyticsData?.categoryDistribution}
                   isLoading={isLoading}
-                  detailed
                 />
               </CardContent>
             </Card>

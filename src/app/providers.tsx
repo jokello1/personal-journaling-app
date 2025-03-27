@@ -2,7 +2,7 @@
 import { SessionProvider } from "next-auth/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { ThemeProvider } from "./providers/theme-providers";
+import ThemeProvider from "./providers/theme-providers";
 
 export function NextAuthProvider({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(() => new QueryClient());
@@ -16,7 +16,9 @@ export function NextAuthProvider({ children }: { children: React.ReactNode }) {
       disableTransitionOnChange
     > */}
       <QueryClientProvider client={queryClient}>
+      <ThemeProvider>
         {children}
+        </ThemeProvider>
       </QueryClientProvider>
     {/* </ThemeProvider> */}
   </SessionProvider>

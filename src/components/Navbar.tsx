@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { ThemeToggle } from './ThemeToggler';
+// import { ThemeToggle } from './ThemeToggler';
 
 export function Navbar() {
   const pathname = usePathname();
@@ -56,7 +56,7 @@ export function Navbar() {
         </nav>
         
         <div className="flex items-center gap-4">
-          <ThemeToggle/>
+          {/* <ThemeToggle/> */}
           <Link href="/dashboard/entries/new">
             <Button size="sm" className='bg-indigo-600 hover:bg-indigo-700 dark:text-white'>New Entry</Button>
           </Link>

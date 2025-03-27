@@ -121,10 +121,6 @@ export function EntryForm({ initialData, onSave, onCancel }: EntryFormProps) {
       return;
     }
 
-    // if (!editor?.getHTML() || editor.getHTML().trim() === "<p></p>") {
-    //   toast("Please enter some content for your entry");
-    //   return;
-    // }
 
     const entryData = {
       title,
@@ -161,7 +157,7 @@ export function EntryForm({ initialData, onSave, onCancel }: EntryFormProps) {
       setCategoriesLoading(false);
     }
 
-  }, [content, debouncedAnalyze,categories,isCategoriesLoading]);
+  }, [content, debouncedAnalyze,categories,primaryCategory]);
 
   const {
     data: analysis,

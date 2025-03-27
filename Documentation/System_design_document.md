@@ -1,4 +1,4 @@
-# Personal Journaling App - Implementation Plan
+Personal Journaling App - Implementation Plan
 
 ## Technology Stack Selection
 
@@ -143,3 +143,20 @@ EntryTag {
 - System design documentation
 - Technical decision log
 - Testing and bug fixes
+
+### Potential scalling challages 
+  - Database Scaling Challenges
+  - Potential Bottlenecks:
+
+  - Large number of entries per user
+  - Complex analytics queries
+  - Growing data volume
+
+  Scaling Solutions:
+  - database sharding
+  Caching layer implementation solutions:
+  - Distributed Caching Strategy
+  Analytics performance optimization solution:
+  - Precompute analytics approach
+  Microservices architecture
+  - microservices

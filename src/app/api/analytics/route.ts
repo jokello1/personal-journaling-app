@@ -195,30 +195,42 @@ function getMoodDistributionData(entries: any[], timeframe: string) {
     lineData
   };
 }
-
 function getCategoryDistributionData(entries: any[]) {
-  // Count entries by primary category
-  const categoryCounts: Record<string, {count: number, color: string}> = {};
-  
+  // Create a map to store entries for each category
+  const categoryEntries: Record<string, {
+    count: number, 
+    color: string, 
+    entries: any[]
+  }> = {};
+
+  // Distribute entries across categories
   entries.forEach(entry => {
-    const primaryCategory = entry.categories.find((c: any) => c.primary);
-    if (primaryCategory) {
-      const categoryName = primaryCategory.category.name;
-      if (!categoryCounts[categoryName]) {
-        categoryCounts[categoryName] = {
+    // Find all categories for the entry
+    entry.categories.forEach((categoryAssoc: any) => {
+      const categoryName = categoryAssoc.category.name;
+      
+      // Initialize category if not exists
+      if (!categoryEntries[categoryName]) {
+        categoryEntries[categoryName] = {
           count: 0,
-          color: primaryCategory.category.color
+          color: categoryAssoc.category.color,
+          entries: []
         };
       }
-      categoryCounts[categoryName].count++;
-    }
+
+      // Increment count and add entry
+      categoryEntries[categoryName].count++;
+      categoryEntries[categoryName].entries.push(entry);
+    });
   });
 
-  return Object.entries(categoryCounts).map(([name, data]) => ({
+  // Transform to array and sort
+  return Object.entries(categoryEntries).map(([name, data]) => ({
     name,
     value: data.count,
-    color: data.color
-  }));
+    color: data.color,
+    entries: data.entries
+  })).sort((a, b) => b.value - a.value);
 }
 
 function getTagCloudData(entries: any[]) {

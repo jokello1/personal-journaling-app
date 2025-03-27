@@ -42,21 +42,14 @@ export default function Settings() {
   const { data: userSettings, isLoading: userSettingsLoading } = useQuery({
     queryKey: ['settings'],
     queryFn: async () => {
-      const res = await fetch('/api/settings');
+      const res = await fetch('/api/user-settings');
       if (!res.ok) throw new Error('Failed to fetch categories');
       return await res.json();
     }
   }
   );
-  const { theme, setTheme } = useTheme()
+  const { setTheme } = useTheme()
 
-  useEffect(() => {
-    if (userSettings && userSettings.darkMode) {
-      setTheme('dark')
-    } else {
-      setTheme((theme === 'dark' ? 'dark' : 'light'))
-    }
-  }, [userSettings])
   const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<SettingsFormData>({
@@ -70,7 +63,7 @@ export default function Settings() {
   const onSubmit = async (data: SettingsFormData) => {
     setIsLoading(true);
     try {
-      const response = await fetch('/api/settings', {
+      const response = await fetch('/api/user-settings', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json'
@@ -82,6 +75,7 @@ export default function Settings() {
         throw new Error('Failed to update settings');
       }
 
+      setTheme(data.darkMode?'dark':'light')
       toast("Your preferences have been successfully saved.",);
     } catch (error) {
       toast("Unable to update settings. Please try again.");
