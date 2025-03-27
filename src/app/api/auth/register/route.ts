@@ -6,8 +6,7 @@ import prisma from "@/lib/prisma";
 const registerSchema = zod.object({
     name: zod.string().min(3).max(50),
     email: zod.string().email(),
-    password: zod.string().min(8).max(13),
-    role: zod.string().min(3).max(50)
+    password: zod.string().min(8).max(13)
 });
 
 export async function POST(request: Request) {

@@ -1,8 +1,4 @@
 
-
-
-I'll analyze the technical decisions in this journal application implementation. Here are 5 key technical decisions:
-
 1. React Query for State Management and Data Fetching
    - Used `useQuery` hook for efficient data fetching and caching
    - Benefits:

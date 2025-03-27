@@ -32,8 +32,7 @@ export default function ThemeProvider({ children }: ThemeProviderProps) {
 
   useEffect(() => {
     setMounted(true);
-    setTheme(userSettings?.darkMode ?'dark': 'light')
-    console.log("Usersettings: ",userSettings)
+    setTheme(userSettings?.darkMode === true ?'dark': 'light')
   }, [userSettings]);
 
   if (!mounted) {

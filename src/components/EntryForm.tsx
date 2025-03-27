@@ -382,7 +382,7 @@ export function EntryForm({ initialData, onSave, onCancel }: EntryFormProps) {
           {tags.map((tag) => (
             <div
               key={tag}
-              className="bg-slate-100 px-3 py-1 rounded-full flex items-center gap-2"
+              className="bg-slate-100 px-3 py-1 rounded-full flex items-center gap-2  dark:bg-gray-600"
             >
               <span>{tag}</span>
               <button

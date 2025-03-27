@@ -2,17 +2,21 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with
 [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
-
+Put in the env variables:
+Run the prisma migration command:
 First, run the development server:
 
 # .env file
 
     NODE_ENV="development"
     DATABASE_URL="postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}?schema=public"
+    <!-- "postgresql://journaldb_owner:npg_gYJh74dXGUIF@ep-falling-moon-a5fzxqwg-pooler.us-east-2.aws.neon.tech/journaldb?sslmode=require" -->
     NEXTAUTH_SECRET="{SECRET}"
 
 
 ```bash
+npx prisma migrate reset
+
 npm install --force
 
 npm run dev

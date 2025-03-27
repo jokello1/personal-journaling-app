@@ -76,7 +76,7 @@ const RegisterPage = () => {
           </p>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="rounded-md shadow-sm -space-y-px">
+          <div className="rounded-md shadow-sm -space-y-px gap-2">
             <div>
               <label htmlFor="name" className="sr-only">
                 Full name

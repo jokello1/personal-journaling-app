@@ -53,7 +53,7 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-100">
       <div className="w-full max-w-md p-6 bg-white rounded-lg shadow-md">
-        <div className="max-w-md w-full space-y-8">
+        <div className=" w-full space-y-8">
           <div>
             <h2 className="mt-6 text-2xl font-bold text-center text-gray-800">Login</h2>
             <p className="mt-2 text-center text-sm text-gray-600">
@@ -66,18 +66,18 @@ export default function LoginPage() {
           {error && <p className="mt-2 text-red-500 text-sm text-center">{error}</p>}
           <form onSubmit={handleSubmit} className="mt-4">
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700">Email</label>
+              <label className="text-sm font-medium text-gray-700">Email</label>
               <input
                 id="email"
                 name="email"
                 type="email"
-                autoComplete="email"
                 required
                 value={formData.email}
                 onChange={handleChange}
-                className="w-full mt-1 p-2 border rounded-md focus:ring focus:ring-indigo-200"
+                className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
               />
             </div>
+
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700">Password</label>
               <input
@@ -89,7 +89,7 @@ export default function LoginPage() {
                 placeholder="Password"
                 value={formData.password}
                 onChange={handleChange}
-                className="w-full mt-1 p-2 border rounded-md focus:ring focus:ring-indigo-200"
+                className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
               />
             </div>
             <div className="text-sm">
